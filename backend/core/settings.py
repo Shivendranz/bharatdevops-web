@@ -74,10 +74,15 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
+# CSRF ke liye
 CSRF_TRUSTED_ORIGINS = [
     "https://api.bharatdevops.com",
     "https://bharatdevops.com",
+    "https://www.bharatdevops.com",
 ]
+
+# CORS ke liye (Frontend se data connect karne ke liye)
+CORS_ALLOW_ALL_ORIGINS = True  # Ya specific domains list
 
 TEMPLATES = [
     {
