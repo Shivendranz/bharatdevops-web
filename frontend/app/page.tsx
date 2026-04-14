@@ -4,7 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 
 export default function HomePage() {
-  const [sections, setSections] = useState([]);
+  const [sections, setSections] = useState<any[]>([]); 
   const [loading, setLoading] = useState(true);
   const [localSearch, setLocalSearch] = useState("");
 
@@ -49,7 +49,7 @@ export default function HomePage() {
           <div className="z-10 text-center px-6">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-400 opacity-60">BharatDevops_Initiative</span>
             <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mt-3">
-              {sections.find(s => s.section_type === 'hero').title}
+              {sections.find(s => s.section_type === 'hero')?.title}
             </h1>
             <p className="max-w-xl mx-auto mt-4 text-slate-500 font-bold text-xs uppercase tracking-[0.15em]">
               Master the cloud ecosystem. Direct access to roadmap.
