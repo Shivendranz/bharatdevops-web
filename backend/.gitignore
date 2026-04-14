@@ -1,0 +1,24 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Secrets (Sabse zaroori)
+.env
+
+# Database (Agar SQLite use ho raha ho toh)
+*.sqlite3
+
+# Media & Static (Production mein inki zarurat nahi hoti repo mein)
+media/
+staticfiles/
+static/
+
+# IDE files
+.vscode/
+.idea/
