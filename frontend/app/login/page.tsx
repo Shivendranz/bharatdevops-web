@@ -13,10 +13,10 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post(login/", {
-        username,
-        password,
-      });
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/login/`, {
+  username,
+  password,
+});
       // Tokens ko browser mein save karna
       localStorage.setItem("access", res.data.access);
       localStorage.setItem("refresh", res.data.refresh);

@@ -12,19 +12,14 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
-    // Backend se Navbar Menu fetch karna
-    // Dhyan de: Yahan ` (backtick) use kiya hai, " (quotes) nahi
-    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/navbar-menu/`)
-      .then(res => {
-          setMenuLinks(res.data);
-      })
-      .catch(err => {
-          console.error("Menu error:", err);
-      });
-}, []); // Empty dependency array zaroori hai
-
-    const token = typeof window !== "undefined" ? localStorage.getItem("access") : null;
+    // 1. Check if user is logged in
+    const token = localStorage.getItem("access");
     setIsLoggedIn(!!token);
+
+    // 2. Backend se Navbar Menu fetch karna
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/navbar-menu/`)
+      .then(res => setMenuLinks(res.data))
+      .catch(err => console.error("Menu error:", err));
   }, [pathname]);
 
   const handleLogout = () => {
