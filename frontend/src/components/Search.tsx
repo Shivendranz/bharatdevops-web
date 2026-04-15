@@ -24,7 +24,7 @@ export default function Search() {
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (query.length > 1) {
-        axios.get(`http://127.0.0.1:8000/api/lessons/?search=${query}`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/lessons/?search=${query}`)
           .then(res => setResults(res.data))
           .catch(err => console.error(err));
       } else {

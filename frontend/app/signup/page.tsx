@@ -13,7 +13,7 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
     try {
-      await axios.post("http://127.0.0.1:8000/api/register/", formData);
+      await axios.post("${process.env.NEXT_PUBLIC_API_URL}/api/register/", formData);
       alert("BharatDevOps mein aapka swagat hai! Account ban gaya. Ab login karein.");
       router.push("/login");
     } catch (err: any) {

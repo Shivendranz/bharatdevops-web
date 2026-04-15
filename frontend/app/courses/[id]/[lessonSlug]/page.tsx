@@ -10,7 +10,7 @@ export default function LessonDetail() {
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   
-  const backendBaseURL = "http://127.0.0.1:8000";
+  const backendBaseURL = "${process.env.NEXT_PUBLIC_API_URL}";
 
   // URL se slug nikalne ka logic (Direct from params)
   const currentSlug = params?.lessonSlug as string;

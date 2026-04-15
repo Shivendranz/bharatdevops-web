@@ -16,7 +16,7 @@ export default function SyllabusPage() {
     if (id) {
       setError(false);
       // Backend slug se detail fetch karega
-      const apiUrl = `http://127.0.0.1:8000/api/courses/${id}/`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/courses/${id}/`;
       
       axios.get(apiUrl)
         .then(res => {

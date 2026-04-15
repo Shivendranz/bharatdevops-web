@@ -15,7 +15,7 @@ export default function CourseLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (id) {
-      axios.get(`http://127.0.0.1:8000/api/courses/${id}/`)
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/courses/${id}/`)
         .then((res) => setCourse(res.data))
         .catch((err) => console.error("Sidebar Error:", err));
     }

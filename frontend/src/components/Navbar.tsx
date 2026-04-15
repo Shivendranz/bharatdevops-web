@@ -13,7 +13,7 @@ export default function Navbar() {
 
   useEffect(() => {
     // Backend se Navbar Menu fetch karna
-    axios.get("http://127.0.0.1:8000/api/navbar-menu/")
+    axios.get("${process.env.NEXT_PUBLIC_API_URL}/api/navbar-menu/")
       .then(res => setMenuLinks(res.data))
       .catch(err => console.error("Menu error:", err));
 
