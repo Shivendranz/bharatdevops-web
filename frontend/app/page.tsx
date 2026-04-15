@@ -98,8 +98,8 @@ export default function HomePage() {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                   {visibleItems.map((item: any, i: number) => {
                     
-                    // ✅ SMARTER LINKING: Slug > ID > Manual Link
-                    const identifier = item.course_slug || item.course_id;
+                    // ✅ identifier ko string bana kar lowercase kar do taaki routing fail na ho
+                    const identifier = (item.course_slug || item.course_id)?.toString();
                     const roadmapLink = identifier 
                       ? `/courses/${identifier}/` 
                       : (item.link || "#");

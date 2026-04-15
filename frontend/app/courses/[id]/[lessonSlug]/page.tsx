@@ -10,7 +10,8 @@ export default function LessonDetail() {
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   
-  const backendBaseURL = "${process.env.NEXT_PUBLIC_API_URL}";
+  // ✅ Sahi (Ise bina quotes ke ya backticks ke likho)
+const backendBaseURL = process.env.NEXT_PUBLIC_API_URL || "https://api.bharatdevops.com";
 
   // URL se slug nikalne ka logic (Direct from params)
   const currentSlug = params?.lessonSlug as string;
