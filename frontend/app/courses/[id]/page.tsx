@@ -8,15 +8,15 @@ export default function SyllabusPage() {
   const params = useParams();
   
   // ✅ 'id' variable mein Course ka slug (e.g., 'linux-roadmap') aayega
-  const id = params?.id; 
+  const slug = params?.id; 
   const [course, setCourse] = useState<any>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (id) {
+    if (slug) {
       setError(false);
       // Backend slug se detail fetch karega
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/courses/${id}/`;
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/courses/${slug}/`;
       
       axios.get(apiUrl)
         .then(res => {
@@ -27,13 +27,13 @@ export default function SyllabusPage() {
           setError(true);
         });
     }
-  }, [id]);
+  }, [slug]);
 
   // 1. Error State
   if (error) return (
     <div className="h-screen flex flex-col items-center justify-center bg-[#fdfbf7] p-6 text-center">
       <div className="text-orange-600 font-black text-5xl mb-4 tracking-tighter uppercase">404_NOT_FOUND</div>
-      <p className="text-slate-500 font-mono text-xs uppercase tracking-widest mb-8">The requested roadmap "{id}" does not exist.</p>
+      <p className="text-slate-500 font-mono text-xs uppercase tracking-widest mb-8">The requested roadmap "{slug}" does not exist.</p>
       <Link href="/" className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-orange-600 transition-colors">
         Return to Base
       </Link>
@@ -107,7 +107,7 @@ export default function SyllabusPage() {
                 <Link 
                   key={lesson.id} 
                   // ✅ FIXED: Yahan ab sirf lesson.slug use hoga, ID fallback hata diya gaya hai
-                  href={`/courses/${id}/${lesson.slug}`} 
+                  href={`/courses/${slug}/${lesson.slug}`} 
                   className="group/lesson"
                 >
                   <div className="bg-slate-50 border border-slate-100 px-8 py-5 rounded-2xl flex items-center transition-all group-hover/lesson:bg-white group-hover/lesson:border-orange-500 group-hover/lesson:-translate-y-1.5 shadow-sm hover:shadow-xl whitespace-nowrap overflow-hidden relative">
