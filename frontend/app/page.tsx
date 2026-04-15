@@ -11,7 +11,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("${process.env.NEXT_PUBLIC_API_URL}/api/home-sections/");
+        const res = await axios.get(home-sections/");
         // Order ke hisaab se sort kar rahe hain
         const sortedData = res.data.sort((a: any, b: any) => a.order - b.order);
         setSections(sortedData);

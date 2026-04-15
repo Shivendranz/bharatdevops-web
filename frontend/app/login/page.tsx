@@ -13,7 +13,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post("${process.env.NEXT_PUBLIC_API_URL}/api/login/", {
+      const res = await axios.post(login/", {
         username,
         password,
       });

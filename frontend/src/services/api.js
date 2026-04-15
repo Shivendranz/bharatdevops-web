@@ -1,7 +1,16 @@
 // Data fetch karne ka logic
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '${process.env.NEXT_PUBLIC_API_URL}';
+// Agar environment variable nahi milta, toh ye default value lega (lekin Vercel par mil jayega)
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.bharatdevops.com';
 
 export const fetchCourses = async () => {
-    const res = await fetch(`${API_URL}/api/courses/`);
-    return res.json();
+    try {
+        const res = await fetch(`${API_URL}/api/courses/`);
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return await res.json();
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        return [];
+    }
 };
