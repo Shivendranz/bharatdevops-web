@@ -1,153 +1,178 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import Link from "next/link"; 
 
 export default function LessonDetail() {
   const params = useParams();
-  const router = useRouter();
   const [lesson, setLesson] = useState<any>(null);
+  const [course, setCourse] = useState<any>(null); 
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   
-  // ✅ Sahi (Ise bina quotes ke ya backticks ke likho)
-const backendBaseURL = process.env.NEXT_PUBLIC_API_URL || "https://api.bharatdevops.com";
+  const backendBaseURL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
-  // URL se slug nikalne ka logic (Direct from params)
-  const currentSlug = params?.lessonSlug as string;
+  const courseSlug = params?.slug as string;       
+  const lessonSlug = params?.lessonSlug as string; 
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // API se Data Fetch karna
   useEffect(() => {
-    if (!mounted || !currentSlug) return;
+    if (!mounted || !courseSlug || !lessonSlug) return;
 
     const loadData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${backendBaseURL}/api/lessons/${currentSlug}/`);
-        setLesson(res.data);
+        const [lessonRes, courseRes] = await Promise.all([
+          axios.get(`${backendBaseURL}/api/lessons/${lessonSlug}/`),
+          axios.get(`${backendBaseURL}/api/courses/${courseSlug}/`)
+        ]);
+        setLesson(lessonRes.data);
+        setCourse(courseRes.data);
       } catch (err) {
         console.error("❌ API Error:", err);
-        setLesson(null);
       } finally {
         setLoading(false);
       }
     };
     loadData();
-  }, [mounted, currentSlug]);
-
-  // Lesson change hote hi scroll top par le jana
-  useEffect(() => {
-    if (currentSlug) {
-      window.scrollTo(0, 0);
-    }
-  }, [currentSlug]);
+  }, [mounted, courseSlug, lessonSlug]);
 
   if (!mounted) return null;
 
-  // Loading State
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-orange-600/20 border-t-orange-600 rounded-full animate-spin"></div>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Loading_Session</span>
-        </div>
-      </div>
-    );
-  }
-
-  // Error State
-  if (!lesson) return <div className="p-20 text-center text-red-500 uppercase font-mono">404: Knowledge_Base_Offline</div>;
+  if (loading) return (
+    <div className="h-screen flex items-center justify-center bg-white font-mono text-[10px] tracking-widest text-slate-400">
+      RESTORING_WORKSPACE_LAYOUT...
+    </div>
+  );
 
   return (
-    <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white font-sans selection:bg-orange-100">
+    <div className="flex flex-col lg:flex-row w-full min-h-screen bg-white font-sans selection:bg-slate-100">
       
-      {/* 🟢 MAIN CONTENT (Left Aligned) */}
-      <div className="flex-1 px-6 py-12 md:py-20 lg:px-16 border-r border-slate-50">
+      {/* 📁 LEFT SIDEBAR (Solid Navigation) */}
+      <aside className="hidden lg:flex flex-col w-[320px] border-r border-slate-200 sticky top-0 h-screen overflow-y-auto bg-white">
         
-        {/* Header Section */}
-        <header className="mb-16">
-          <div className="flex items-center gap-2 mb-6">
-            <span className="h-[1px] w-8 bg-orange-500"></span>
-            <span className="text-[11px] font-bold text-orange-600 uppercase tracking-widest">
-              Course / {lesson.slug}
-            </span>
+        {/* Course Header - Bold Black */}
+        <div className="p-6">
+          <div className="bg-slate-900 p-5 rounded-2xl text-center shadow-md">
+            <h2 className="text-base font-black text-white uppercase tracking-tight">
+              {course?.title || "Course"}
+            </h2>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-            {lesson.title}
-          </h1>
-        </header>
-
-        {/* Content Section (No max-width limit) */}
-        <article className="min-h-[50vh] max-w-none">
-          <div 
-            className="ck-content text-[18px] text-slate-700 leading-relaxed font-normal"
-            style={{ fontFamily: "'Inter', sans-serif" }}
-            dangerouslySetInnerHTML={{ 
-              __html: lesson.content?.replace(/src="\/media\//g, `src="${backendBaseURL}/media/`) || "" 
-            }} 
-          />
-        </article>
-
-        {/* ⏭️ NAVIGATION (ID Based) */}
-        <div className="mt-24 pt-8 border-t border-slate-100 flex items-center justify-between">
-          
-          {/* Previous Button */}
-          {lesson?.prev_lesson?.slug ? (
-            <button 
-              onClick={() => router.push(`/courses/${params.id}/${lesson.prev_lesson.slug}`)}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200 text-slate-600 hover:text-orange-600 hover:border-orange-500 transition-all text-xs font-bold group"
-            >
-              <span className="group-hover:-translate-x-1 transition-transform">←</span> 
-              {lesson.prev_lesson.title}
-            </button>
-          ) : <div />}
-
-          {/* Next Button */}
-          {lesson?.next_lesson?.slug ? (
-            <button 
-              onClick={() => router.push(`/courses/${params.id}/${lesson.next_lesson.slug}`)}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-900 text-white hover:bg-orange-600 transition-all text-xs font-bold group"
-            >
-              {lesson.next_lesson.title} 
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </button>
-          ) : (
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">
-              🎉 End of Course
-            </span>
-          )}
         </div>
 
-        {/* Footer */}
-        <footer className="mt-16 flex items-center justify-between opacity-30 grayscale border-t border-slate-50 pt-8">
-          <span className="text-[10px] font-mono uppercase tracking-widest">Hash: {lesson.slug}</span>
-          <span className="text-[10px] font-mono uppercase">BharatDevops v2.0</span>
-        </footer>
-      </div>
+        {/* Modules Navigation */}
+        <div className="px-6 pb-20 space-y-8">
+          {course?.modules?.map((mod: any) => (
+            <div key={mod.id} className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+              
+              {/* Module Title - Solid Strip */}
+              <div className="bg-slate-900 py-3.5 px-4 text-center border-b border-slate-800">
+                <h4 className="text-[11px] font-black text-white uppercase tracking-widest">
+                  {mod.title}
+                </h4>
+              </div>
 
-      {/* 🟠 SIDEBAR */}
-      <aside className="hidden xl:flex flex-col w-[320px] p-8 gap-6 bg-slate-50/50 sticky top-0 h-screen overflow-y-auto">
-        <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Featured_Content</div>
-        
-        <div className="w-full bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          <div className="w-8 h-8 bg-orange-100 rounded-lg mb-4 flex items-center justify-center text-orange-600 font-bold text-xs">01</div>
-          <h4 className="text-sm font-black text-slate-800 uppercase leading-tight mb-2">Pro Mentorship</h4>
-          <p className="text-[11px] text-slate-500 leading-normal font-medium">Join 500+ developers in our private Discord community.</p>
-        </div>
-
-        <div className="w-full bg-slate-950 p-6 rounded-2xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-orange-600/30 blur-2xl"></div>
-          <h4 className="text-sm font-black text-white uppercase mb-1 relative z-10 italic">Cloud Masterclass</h4>
-          <p className="text-[10px] text-slate-400 relative z-10 mb-4 font-mono">AWS_ARCHITECT_TRAINER</p>
-          <div className="text-[10px] font-bold text-orange-500">Learn More →</div>
+              {/* Lesson Titles - Bold List */}
+              <div className="divide-y divide-slate-100">
+                {mod.lessons?.map((les: any) => (
+                  <Link 
+                    key={les.id}
+                    href={`/courses/${courseSlug}/${les.slug}`}
+                    className={`flex items-center justify-center text-center text-[13px] py-4 px-5 transition-all font-bold leading-tight ${
+                      les.slug === lessonSlug 
+                      ? 'bg-slate-50 text-slate-900 border-l-4 border-slate-900' 
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                  >
+                    <span className="truncate">{les.title}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </aside>
 
+      {/* 🟢 FULL-WIDTH MAIN CONTENT AREA */}
+      <main className="flex-1 bg-white border-r border-slate-100 min-w-0">
+        <div className="w-full px-8 py-10 lg:px-14">
+          
+          <header className="mb-12 border-b-2 border-slate-50 pb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                System_Log // {lessonSlug}
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-5xl font-black text-slate-950 tracking-tighter uppercase leading-[1.1]">
+              {lesson?.title}
+            </h1>
+          </header>
+
+          <article className="prose prose-slate max-w-none w-full">
+            <div 
+              className="ck-content text-[18px] text-slate-700 leading-relaxed font-normal w-full"
+              dangerouslySetInnerHTML={{ 
+                __html: lesson?.content?.replace(/src="\/media\//g, `src="${backendBaseURL}/media/`) || "" 
+              }} 
+            />
+          </article>
+
+          {/* Navigation Buttons */}
+          <div className="mt-24 pt-10 border-t-2 border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-6">
+            {lesson?.prev_lesson?.slug ? (
+              <Link 
+                href={`/courses/${courseSlug}/${lesson.prev_lesson.slug}`}
+                className="w-full sm:w-auto px-10 py-4 rounded-xl border-2 border-slate-900 text-slate-900 font-black text-[11px] uppercase tracking-widest hover:bg-slate-50 transition-all text-center"
+              >
+                ← Back
+              </Link>
+            ) : <div />}
+
+            {lesson?.next_lesson?.slug ? (
+              <Link 
+                href={`/courses/${courseSlug}/${lesson.next_lesson.slug}`}
+                className="w-full sm:w-auto px-12 py-4 bg-slate-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]"
+              >
+                Proceed Next →
+              </Link>
+            ) : (
+              <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">End_Of_Document</span>
+            )}
+          </div>
+        </div>
+      </main>
+
+      {/* 💰 RIGHT SIDEBAR (Ads) */}
+      <aside className="hidden xl:flex flex-col w-[280px] sticky top-0 h-screen bg-[#fafafa] p-6 gap-6 overflow-y-auto border-l border-slate-100">
+        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] text-center">Sponsored</span>
+        
+        <div className="w-full aspect-square bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-[10px] font-black text-slate-200 uppercase text-center p-4">
+          Space_1
+        </div>
+
+        <div className="w-full h-[600px] bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-[10px] font-black text-slate-200 uppercase text-center p-4">
+          Premium_Banner
+        </div>
+
+        <div className="w-full aspect-square bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-[10px] font-black text-slate-200 uppercase text-center p-4">
+          Space_3
+        </div>
+      </aside>
+
+      <style jsx global>{`
+        .ck-content { width: 100% !important; }
+        .ck-content h2 { font-weight: 900; font-size: 1.8rem; margin-top: 4rem; color: #000; text-transform: uppercase; border-bottom: 2px solid #000; display: inline-block; margin-bottom: 1rem; }
+        .ck-content p { margin-top: 1.5rem; line-height: 1.85; color: #334155; width: 100%; }
+        .ck-content pre { background: #000; color: #fff; padding: 2rem; border-radius: 12px; margin-top: 2rem; overflow-x: auto; width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; border: 1px solid #334155; }
+        .ck-content code { background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 6px; color: #e11d48; font-weight: 700; }
+        .ck-content img { border-radius: 1rem; margin: 3rem 0; max-width: 100%; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #000; border-radius: 10px; }
+      `}</style>
     </div>
   );
 }
